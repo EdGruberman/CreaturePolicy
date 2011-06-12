@@ -1,0 +1,5 @@
+name: FixCreatureSpawns
+version: %VERSION%
+depend: [MessageManager]
+main: edgruberman.bukkit.fixcreaturespawns.Main
+author: EdGruberman (ed@rjump.com)

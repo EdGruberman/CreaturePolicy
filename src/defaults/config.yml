@@ -1,0 +1,13 @@
+level:
+    log: CONFIG
+    send: ALL
+    broadcast: ALL
+unsafeCreatureTypes:
+    - Creeper
+    - Skeleton
+    - Spider
+    - Zombie
+safeMaterial:
+    - LEAVES
+
+     
