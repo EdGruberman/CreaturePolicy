@@ -15,25 +15,27 @@ import edgruberman.bukkit.messagemanager.MessageManager;
 
 public class Main extends org.bukkit.plugin.java.JavaPlugin {
 
-    public static MessageManager messageManager;
+    static ConfigurationFile configurationFile;
+    static MessageManager messageManager;
     
     private List<String> unsafeCreatureTypes = new ArrayList<String>();
     private List<String> safeMaterial = new ArrayList<String>();
     private int safeRadius;
     
     public void onLoad() {
-        Configuration.load(this);
+        Main.configurationFile = new ConfigurationFile(this);
+        Main.configurationFile.load();
+        
+        Main.messageManager = new MessageManager(this);
+        Main.messageManager.log("Version " + this.getDescription().getVersion());
     }
 	
     public void onEnable() {
-        Main.messageManager = new MessageManager(this);
-        Main.messageManager.log("Version " + this.getDescription().getVersion());
-        
         this.unsafeCreatureTypes = this.getConfiguration().getStringList("unsafeCreatureTypes", this.unsafeCreatureTypes);
-        Main.messageManager.log(MessageLevel.CONFIG, "Unsafe Creature Types: " + this.unsafeCreatureTypes);
+        Main.messageManager.log("Unsafe Creature Types: " + this.unsafeCreatureTypes, MessageLevel.CONFIG);
         
         this.safeMaterial = this.getConfiguration().getStringList("safeMaterial", this.safeMaterial);
-        Main.messageManager.log(MessageLevel.CONFIG, "Safe Material: " + this.safeMaterial);
+        Main.messageManager.log("Safe Material: " + this.safeMaterial, MessageLevel.CONFIG);
         
         PluginManager pluginManager = this.getServer().getPluginManager();
         EntityListener entityListener = new EntityListener(this);
@@ -43,10 +45,7 @@ public class Main extends org.bukkit.plugin.java.JavaPlugin {
     }
     
     public void onDisable() {
-        // TODO: Add plugin disable code here.
-        
         Main.messageManager.log("Plugin Disabled");
-        Main.messageManager = null;
     }
     
     protected boolean isAllowedSpawn(CreatureType type, Location spawningAt) {
@@ -59,13 +58,9 @@ public class Main extends org.bukkit.plugin.java.JavaPlugin {
         // Prevent if distance from player is within the safety radius.
         for (Player player : spawningAt.getWorld().getPlayers()) {
             double distance = this.distanceBetween(spawningAt, player.getLocation());
-            Main.messageManager.log(MessageLevel.FINEST
-                    , "Spawn detected " + distance + "m from " + player.getName()
-            );
+            Main.messageManager.log("Spawn detected " + distance + "m from " + player.getName(), MessageLevel.FINEST);
             if (distance >= 0 && distance <= this.safeRadius) {
-                Main.messageManager.log(MessageLevel.FINE
-                        , "Unsafe spawn at " + distance + "m near " + player.getName()
-                );
+                Main.messageManager.log("Unsafe spawn at " + distance + "m near " + player.getName(), MessageLevel.FINE);
                 //return false;
             }
         }

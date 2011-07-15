@@ -17,15 +17,16 @@ public class EntityListener extends org.bukkit.event.entity.EntityListener {
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         if (event.isCancelled()) return;
         
-        
         if (this.plugin.isAllowedSpawn(event.getCreatureType(), event.getLocation())) return;
         
-        Main.messageManager.log(MessageLevel.FINER, "Cancelling " + event.getCreatureType().getName()
-                + " spawn in \"" + event.getLocation().getWorld().getName() + "\" at"
-                + " x: " + event.getLocation().getBlockX()
-                + " y: " + event.getLocation().getBlockY()
-                + " z: " + event.getLocation().getBlockZ()
-                + " on " + event.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().name()
+        Main.messageManager.log(
+                "Cancelling " + event.getCreatureType().getName()
+                    + " spawn in \"" + event.getLocation().getWorld().getName() + "\" at"
+                    + " x: " + event.getLocation().getBlockX()
+                    + " y: " + event.getLocation().getBlockY()
+                    + " z: " + event.getLocation().getBlockZ()
+                    + " on " + event.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().name()
+                , MessageLevel.FINER
         );
         event.setCancelled(true);
     }
