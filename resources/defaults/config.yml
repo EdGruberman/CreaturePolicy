@@ -1,7 +1,3 @@
-level:
-    log: CONFIG
-    send: ALL
-    broadcast: ALL
 unsafeCreatureTypes:
     - Creeper
     - Skeleton
@@ -9,5 +5,4 @@ unsafeCreatureTypes:
     - Zombie
 safeMaterial:
     - LEAVES
-
-     
+safeRadius: 24

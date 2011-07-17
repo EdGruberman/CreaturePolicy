@@ -1,23 +1,22 @@
 package edgruberman.bukkit.fixcreaturespawns;
 
 import org.bukkit.block.BlockFace;
+import org.bukkit.event.Event;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import edgruberman.bukkit.messagemanager.MessageLevel;
 
 public class EntityListener extends org.bukkit.event.entity.EntityListener {
     
-    private Main plugin;
-    
     public EntityListener(Main plugin) {
-        this.plugin = plugin;
+        plugin.getServer().getPluginManager().registerEvent(Event.Type.CREATURE_SPAWN, this, Event.Priority.Normal, plugin);
     }
     
     @Override
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         if (event.isCancelled()) return;
         
-        if (this.plugin.isAllowedSpawn(event.getCreatureType(), event.getLocation())) return;
+        if (Main.isAllowedSpawn(event)) return;
         
         Main.messageManager.log(
                 "Cancelling " + event.getCreatureType().getName()
