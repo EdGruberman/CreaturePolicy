@@ -9,14 +9,14 @@ import org.bukkit.material.MaterialData;
 import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.messagemanager.channels.Channel;
 
-class EntityListener extends org.bukkit.event.entity.EntityListener {
+final class EntityListener extends org.bukkit.event.entity.EntityListener {
     
-    EntityListener(Main plugin) {
+    EntityListener(final Main plugin) {
         plugin.getServer().getPluginManager().registerEvent(Event.Type.CREATURE_SPAWN, this, Event.Priority.Normal, plugin);
     }
     
     @Override
-    public void onCreatureSpawn(CreatureSpawnEvent event) {
+    public void onCreatureSpawn(final CreatureSpawnEvent event) {
         if (event.isCancelled()) return;
         
         if (Main.isAllowedSpawn(event)) return;

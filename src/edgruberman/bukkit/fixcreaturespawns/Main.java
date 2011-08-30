@@ -13,12 +13,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.material.MaterialData;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
 import edgruberman.bukkit.messagemanager.MessageLevel;
 import edgruberman.bukkit.messagemanager.MessageManager;
 
-public class Main extends org.bukkit.plugin.java.JavaPlugin {
+public final class Main extends JavaPlugin {
     
     private static final ArrayList<String> DEFAULT_UNSAFE_SPAWN_REASONS = new ArrayList<String>(Arrays.asList(
               "NATURAL"
@@ -98,7 +99,7 @@ public class Main extends org.bukkit.plugin.java.JavaPlugin {
         Main.messageManager.log("Safe Radius: " + safeRadius, MessageLevel.CONFIG);
     }
     
-    static boolean isAllowedSpawn(CreatureSpawnEvent event) {
+    static boolean isAllowedSpawn(final CreatureSpawnEvent event) {
         // Allow safe spawn reasons.
         if (!Main.unsafeSpawnReasons.contains(event.getSpawnReason())) return true;
         
