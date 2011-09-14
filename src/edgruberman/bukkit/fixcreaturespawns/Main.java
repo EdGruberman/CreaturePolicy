@@ -24,15 +24,15 @@ public final class Main extends JavaPlugin {
     private static final ArrayList<String> DEFAULT_UNSAFE_SPAWN_REASONS = new ArrayList<String>(Arrays.asList(
               "NATURAL"
     ));
+    
     private static final ArrayList<String> DEFAULT_UNSAFE_CREATURE_TYPES = new ArrayList<String>(Arrays.asList(
               "CREEPER"
-            , "SKELETON"
-            , "SPIDER"
-            , "ZOMBIE"
     ));
+    
     private static final ArrayList<String> DEFAULT_SAFE_MATERIAL = new ArrayList<String>(Arrays.asList(
               "LEAVES"
     ));
+    
     private static final int DEFAULT_SAFE_RADIUS = 24;
 
     static ConfigurationFile configurationFile;
@@ -114,9 +114,11 @@ public final class Main extends JavaPlugin {
         // Prevent if distance from player is within a defined safety radius.
         if (Main.safeRadiusSquared >= 0) {
             for (Player player : event.getLocation().getWorld().getPlayers()) {
-                double distanceSquared = player.getLocation().distanceSquared(event.getLocation());
-                if (distanceSquared <= Main.safeRadiusSquared) {
-                    Main.messageManager.log("Unsafe " + event.getSpawnReason() + " spawn at " + (int) Math.sqrt(distanceSquared) + "m near " + player.getName(), MessageLevel.FINE);
+                if (player.getLocation().distanceSquared(event.getLocation()) <= Main.safeRadiusSquared) {
+                    Main.messageManager.log("Unsafe " + event.getSpawnReason() + " spawn"
+                            + " at " + (int) Math.sqrt(player.getLocation().distanceSquared(event.getLocation())) + "m"
+                            + " near " + player.getName(), MessageLevel.FINE
+                    );
                     return false;
                 }
             }

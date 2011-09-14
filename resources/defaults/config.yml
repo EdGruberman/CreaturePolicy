@@ -2,9 +2,6 @@ unsafeSpawnReasons:
     - NATURAL
 unsafeCreatureTypes:
     - CREEPER
-    - SKELETON
-    - SPIDER
-    - ZOMBIE
 safeMaterial:
     - LEAVES
 safeRadius: 24
