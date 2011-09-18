@@ -1,4 +1,4 @@
-package edgruberman.bukkit.fixcreaturespawns;
+package edgruberman.bukkit.creaturepolicy;
 
 import java.io.File;
 import java.io.FileNotFoundException;

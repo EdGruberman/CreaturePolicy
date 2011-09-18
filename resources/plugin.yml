@@ -1,5 +1,5 @@
-name: FixCreatureSpawns
+name: CreaturePolicy
 version: %VERSION%
 depend: [MessageManager]
-main: edgruberman.bukkit.fixcreaturespawns.Main
+main: edgruberman.bukkit.creaturepolicy.Main
 author: EdGruberman (ed@rjump.com)

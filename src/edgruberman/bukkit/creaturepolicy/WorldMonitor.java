@@ -1,4 +1,4 @@
-package edgruberman.bukkit.fixcreaturespawns;
+package edgruberman.bukkit.creaturepolicy;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.world.WorldListener;

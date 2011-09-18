@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<project name="FixCreatureSpawns" default="Test (Build and Copy)" basedir="..">
-    <property name="implementation-title" value="edgruberman.bukkit.fixcreaturespawns"/>
-    <property name="implementation-name" value="edgruberman/bukkit/fixcreaturespawns/"/>
+<project name="CreaturePolicy" default="Test (Build and Copy)" basedir="..">
+    <property name="implementation-title" value="edgruberman.bukkit.creaturepolicy"/>
+    <property name="implementation-name" value="edgruberman/bukkit/creaturepolicy/"/>
     <property name="manifest-classpath" value=""/>
         
     <property name="test" location="D:/Documents/Personal/Games/Minecraft/Server/plugins"/>

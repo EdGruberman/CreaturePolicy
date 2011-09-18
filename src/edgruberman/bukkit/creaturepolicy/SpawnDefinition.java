@@ -1,4 +1,4 @@
-package edgruberman.bukkit.fixcreaturespawns;
+package edgruberman.bukkit.creaturepolicy;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
