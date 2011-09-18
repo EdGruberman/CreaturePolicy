@@ -1,6 +1,5 @@
 package edgruberman.bukkit.creaturepolicy;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ public final class Main extends JavaPlugin {
     
     static ConfigurationFile configurationFile;
     static MessageManager messageManager;
-
+    
     private static Plugin plugin;
     private static Map<World, ConfigurationFile> worldFiles = new HashMap<World, ConfigurationFile>();
     
@@ -46,8 +45,8 @@ public final class Main extends JavaPlugin {
 	
     public void onEnable() {
         Main.loadConfiguration();
-        new SpawnCanceller(this);
-        new WorldMonitor(this);
+        new Enforcer(this);
+        new Publisher(this);
         Main.messageManager.log("Plugin Enabled");
     }
     
@@ -56,71 +55,71 @@ public final class Main extends JavaPlugin {
     }
     
     static void loadConfiguration() {
-        SpawnBlacklist.worlds.clear();
+        Publisher.policies.clear();
         for (World world : Bukkit.getServer().getWorlds())
-            Main.loadBlacklist(world, new SpawnBlacklist(world));
+            Publisher.publish(world);
     }
     
-    static int loadBlacklist(final World world, final SpawnBlacklist blacklist) {
-        if (!Main.worldFiles.containsKey(world)) {
-            Main.worldFiles.put(world, new ConfigurationFile(Main.plugin, WORLD_SPECIFICS + "/" + world.getName() + ".yml"));
+    static void loadPolicy(final Policy policy) {
+        if (!Main.worldFiles.containsKey(policy.world)) {
+            Main.worldFiles.put(policy.world, new ConfigurationFile(Main.plugin, WORLD_SPECIFICS + "/" + policy.world.getName() + ".yml"));
         } else {
-            Main.worldFiles.get(world).load();
+            Main.worldFiles.get(policy.world).load();
         }
         
-        Configuration cfg = Main.worldFiles.get(world).getConfiguration();
+        Configuration cfg = Main.worldFiles.get(policy.world).getConfiguration();
         
-        blacklist.creatures.clear();
+        policy.rules.clear();
         
         List<String> keys = cfg.getKeys();
         if (keys == null || keys.size() == 0) {
-            Main.messageManager.log("All spawns allowed for [" + world.getName() + "]", MessageLevel.CONFIG);
-            return 0;
-        }
-        
-        for (String key : keys) {
-            if (key.equals("safeRadius")) {
-                blacklist.setSafeRadius(cfg.getInt("safeRadius", SpawnBlacklist.DEFAULT_SAFE_RADIUS));
-                Main.messageManager.log("Safe Radius for [" + blacklist.world.getName() + "]: " + blacklist.getSafeRadius(), MessageLevel.CONFIG);
-                
-            } else {
-                Main.loadDefinition(cfg.getNode(key), blacklist);
-
-            }
-        }
-        
-        int count = 0;
-        for (List<SpawnDefinition> def : blacklist.creatures.values())
-            count += def.size();
-        
-        Main.messageManager.log("Loaded " + count + " spawn definition" + (count != 1 ? "s" : "") + " into blacklist for [" + world.getName() + "]", MessageLevel.CONFIG);
-        return count;
-    }
-    
-    private static void loadDefinition(final ConfigurationNode node, final SpawnBlacklist blacklist) {
-        CreatureType type;
-        try {
-            type = CreatureType.valueOf(node.getString("creature"));
-        } catch (IllegalArgumentException e) {
-            Main.messageManager.log("Unrecognized creature \"" + node.getString("creature") + "\" in \"" + Main.worldFiles.get(blacklist.world).getFile().getPath() + "\"", MessageLevel.WARNING);
+            Main.messageManager.log("Policy loaded for [" + policy.world.getName() + "] with " + policy.defaultRule, MessageLevel.CONFIG);
             return;
         }
         
-        if (!blacklist.creatures.containsKey(type))
-            blacklist.creatures.put(type, new ArrayList<SpawnDefinition>());
+        for (String key : keys)
+            Main.loadRule(key, cfg.getNode(key), policy);
         
-        SpawnReason reason = SpawnDefinition.DEFAULT_REASON;
+        Main.messageManager.log("Loaded " + policy.rules.size() + " rule" + (policy.rules.size() != 1 ? "s" : "") + " into policy for [" + policy.world.getName() + "]", MessageLevel.CONFIG);
+        Main.messageManager.log("Policy loaded for [" + policy.world.getName() + "] with " + policy.defaultRule, MessageLevel.CONFIG);
+    }
+    
+    private static void loadRule(final String creature, final ConfigurationNode node, final Policy policy) {
+        CreatureType type = null;
+        if (!creature.equals("default")) {
+            try {
+                type = CreatureType.valueOf(creature);
+            } catch (IllegalArgumentException e) {
+                Main.messageManager.log("Unrecognized creature \"" + node.getString("creature") + "\" in \"" + Main.worldFiles.get(policy.world).getFile().getPath() + "\"", MessageLevel.WARNING);
+                return;
+            }
+        }
+        
+        boolean allow = node.getBoolean("allow", Rule.DEFAULT_ALLOW);
+        
+        Rule rule = new Rule(type, allow);
+        
+        for (ConfigurationNode e : node.getNodeList("exceptions", null))
+            Main.loadException(e, rule);
+        
+        policy.add(rule);
+        
+        Main.messageManager.log("Loaded rule in policy for [" + policy.world.getName() + "] as " + rule, MessageLevel.FINEST);
+    }
+    
+    private static void loadException(final ConfigurationNode node, final Rule rule) {
+        SpawnReason reason = Exception.DEFAULT_REASON;
         try {
             String reasonCfg = node.getString("reason");
             if (reasonCfg != null)
                 reason = SpawnReason.valueOf(reasonCfg);
             
         } catch (IllegalArgumentException e) {
-            Main.messageManager.log("Unrecognized reason \"" + node.getString("reason") + "\" in \"" + Main.worldFiles.get(blacklist.world).getFile().getPath() + "\"", MessageLevel.WARNING);
+            Main.messageManager.log("Unrecognized reason \"" + node.getString("reason") + "\"", MessageLevel.WARNING);
             return;
         }
         
-        MaterialData md = SpawnDefinition.DEFAULT_MATERIAL;
+        MaterialData md = Exception.DEFAULT_MATERIAL;
         String materialEntry = node.getString("material");
         if (materialEntry != null) {
             Material material;
@@ -128,17 +127,17 @@ public final class Main extends JavaPlugin {
                 material = Material.valueOf(materialEntry.split(":")[0]);
                 
             } catch (IllegalArgumentException e) {
-                Main.messageManager.log("Unrecognized material \"" + materialEntry.split(":")[0] + "\" in \"" + Main.worldFiles.get(blacklist.world).getFile().getPath() + "\"", MessageLevel.WARNING);
+                Main.messageManager.log("Unrecognized material \"" + materialEntry.split(":")[0] + "\"", MessageLevel.WARNING);
                 return;
             }
             
-            Byte data = SpawnDefinition.MATERIAL_DATA_ANY;
+            Byte data = Exception.MATERIAL_DATA_ANY;
             if (materialEntry.contains(":")) {
                 try {
                     data = Byte.parseByte(materialEntry.split(":")[1]);
                     
                 } catch (NumberFormatException e) {
-                    Main.messageManager.log("Unrecognized data value \"" + materialEntry + "\" in \"" + Main.worldFiles.get(blacklist.world).getFile().getPath() + "\"", MessageLevel.WARNING);
+                    Main.messageManager.log("Unrecognized data value \"" + materialEntry + "\"", MessageLevel.WARNING);
                     return;
                 }
             }
@@ -146,24 +145,18 @@ public final class Main extends JavaPlugin {
             md = new MaterialData(material, data);
         }
         
-        BlockFace relative = SpawnDefinition.DEFAULT_RELATIVE;
+        BlockFace relative = Exception.DEFAULT_RELATIVE;
         try {
             String relativeCfg = node.getString("relative");
             if (relativeCfg != null)
                 relative = BlockFace.valueOf(relativeCfg);
             
         } catch (IllegalArgumentException e) {
-            Main.messageManager.log("Unrecognized relative \"" + node.getString("relative") + "\" in \"" + Main.worldFiles.get(blacklist.world).getFile().getPath() + "\"", MessageLevel.WARNING);
+            Main.messageManager.log("Unrecognized relative \"" + node.getString("relative") + "\"", MessageLevel.WARNING);
             return;
         }
         
-        SpawnDefinition def = new SpawnDefinition(
-                  reason
-                , md
-                , relative
-        );
-        blacklist.creatures.get(type).add(def);
-        
-        Main.messageManager.log("Loaded blacklist spawn definition for " + type + " in [" + blacklist.world.getName() + "] as " + def, MessageLevel.FINEST);
+        Exception e = new Exception(reason, md, relative);
+        rule.exceptions.add(e);
     }
 }

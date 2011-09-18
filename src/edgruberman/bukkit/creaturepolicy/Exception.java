@@ -6,25 +6,22 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.material.MaterialData;
 
-/**
- * Defines criterion for matching a spawn.
- */
-final class SpawnDefinition {
+final class Exception {
     
     static final SpawnReason DEFAULT_REASON = null;
     static final MaterialData DEFAULT_MATERIAL = null;
     static final BlockFace DEFAULT_RELATIVE = BlockFace.SELF;
     
     static final byte MATERIAL_DATA_ANY = (byte) 0xff;
-    
+
     SpawnReason reason;
     MaterialData material;
     BlockFace relative;
     
-    SpawnDefinition(final SpawnReason reason, final MaterialData material, final BlockFace relative) {
+    Exception(final SpawnReason reason, final MaterialData material, final BlockFace relative) {
         this.reason = reason;
         this.material = material;
-        this.relative = (relative != null ? relative : SpawnDefinition.DEFAULT_RELATIVE);
+        this.relative = (relative != null ? relative : Exception.DEFAULT_RELATIVE);
     }
     
     boolean isMatch(final CreatureSpawnEvent event) {
@@ -59,7 +56,7 @@ final class SpawnDefinition {
             return false;
         
         // Any data matches, only check ID, avoid expensive getBlock() call
-        if (this.material.getData() == SpawnDefinition.MATERIAL_DATA_ANY)
+        if (this.material.getData() == Exception.MATERIAL_DATA_ANY)
             return true;
 
         // ID and data must both explicitly match
