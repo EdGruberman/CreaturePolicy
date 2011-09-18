@@ -41,7 +41,7 @@
     
         <mkdir dir="${stage}/jar/defaults"/>
         <copy todir="${stage}/jar/defaults">
-            <fileset dir="${resources}/defaults"/>
+            <fileset dir="${resources}" includes="defaults/**"/>
         </copy>
     
         <manifest file="${stage}/MANIFEST.MF">

@@ -1,7 +1,0 @@
-unsafeSpawnReasons:
-    - NATURAL
-unsafeCreatureTypes:
-    - CREEPER
-safeMaterial:
-    - LEAVES
-safeRadius: 24

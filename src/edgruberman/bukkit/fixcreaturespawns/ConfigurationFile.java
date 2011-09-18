@@ -146,6 +146,10 @@ public final class ConfigurationFile {
         this.configuration.load();
     }
     
+    File getFile() {
+        return this.file;
+    }
+    
     int getMaxSaveFrequency() {
         return this.maxSaveFrequency;
     }
