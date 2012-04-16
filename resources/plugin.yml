@@ -1,5 +1,5 @@
-name: CreaturePolicy
-version: %VERSION%
-depend: [MessageManager]
-main: edgruberman.bukkit.creaturepolicy.Main
-author: EdGruberman (ed@rjump.com)
+name: @NAME@
+description: Creature spawn control based on rules
+version: @VERSION@
+author: @AUTHOR@
+main: @MAIN@

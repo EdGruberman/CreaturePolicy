@@ -1,52 +1,37 @@
 package edgruberman.bukkit.creaturepolicy;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.entity.CreatureType;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-import edgruberman.bukkit.messagemanager.MessageLevel;
-
 /**
- * Criteria for controlling a spawn.
+ * Criteria for allowing or denying a creature spawn.
  */
-final class Rule {
-    
-    static final boolean DEFAULT_ALLOW = true;
-    
-    CreatureType type;
-    boolean allow;
-    List<Exception> exceptions = new ArrayList<Exception>();
-    
-    Rule() {
-        this.type = null;
-        this.allow = Rule.DEFAULT_ALLOW;
+public abstract class Rule {
+
+    protected Policy policy;
+    protected boolean allow;
+
+    public void load(final ConfigurationSection config) {
+        this.allow = !this.policy.isDefaultAllowed();  // Assume exception
+        if (config == null) return;
+
+        this.allow = config.getBoolean("allow", this.allow);
     }
-    
-    Rule(final CreatureType type, final boolean allow) {
-        this.type = type;
-        this.allow = allow;
+
+    public abstract boolean isApplicable(final CreatureSpawnEvent event);
+
+    public boolean isAllowed(final CreatureSpawnEvent event) {
+        return this.allow;
     }
-    
-    boolean isAllowed(final CreatureSpawnEvent event) {
-        for (Exception e : exceptions)
-            if (e.isMatch(event)) {
-                Main.messageManager.log("Exception match for " + this.type + " as " + e, MessageLevel.FINER);
-                return !allow;
-            }
-        
-        return allow;
+
+    public void clear() {
+        this.policy = null;
+        return;
     }
-    
+
     @Override
     public String toString() {
-        String ex = "";
-        for (Exception e : this.exceptions) {
-            if (!ex.equals("")) ex += "; ";
-            ex += e;
-        }
-        
-        return (this.type != null ? "Creature: " + this.type : "default") + "; Allow: " + this.allow + "; Exceptions: [" + ex + "]"; 
+        return this.getClass().getSimpleName() + "; Allow: " + this.allow;
     }
+
 }
