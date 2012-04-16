@@ -11,7 +11,10 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-public class MaterialRule extends ReasonRule {
+/**
+ * Applicability determined by comparing material relative to spawn location.
+ */
+public class RelativeMaterial extends ReasonType {
 
     protected static final BlockFace DEFAULT_RELATIVE = BlockFace.DOWN;
 
@@ -19,7 +22,7 @@ public class MaterialRule extends ReasonRule {
      * Material Type IDs and associated byte data.  If no data list items exist, any data will apply.
      */
     protected final Map<Integer, List<Byte>> materials = new HashMap<Integer, List<Byte>>();
-    protected BlockFace relative = MaterialRule.DEFAULT_RELATIVE;
+    protected BlockFace relative = RelativeMaterial.DEFAULT_RELATIVE;
 
     @Override
     public void load(final ConfigurationSection config) {
@@ -91,7 +94,7 @@ public class MaterialRule extends ReasonRule {
             }
         }
 
-        return this.getClass().getSimpleName() + ": [entities: " + this.entities + "; reasons: " + this.reasons + "; materials: [" + materials + "]; relative: " + this.relative + "]";
+        return this.getClass().getSimpleName() + ": [reasons: " + this.reasons + "; types: " + this.types + "; materials: [" + materials + "]; relative: " + this.relative + "]";
     }
 
 }
