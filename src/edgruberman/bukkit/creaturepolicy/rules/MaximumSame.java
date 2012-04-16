@@ -11,12 +11,9 @@ public class MaximumSame extends ReasonType {
 
     protected static final int DEFAULT_MAXIMUM = -1;
     protected static final int DEFAULT_RADIUS = -1;
-    protected static final int DEFAULT_REFRESH = -1;
 
     protected int maximum = MaximumSame.DEFAULT_MAXIMUM;
     protected int radius = MaximumSame.DEFAULT_RADIUS;
-    protected long refresh = MaximumSame.DEFAULT_REFRESH;
-    protected long lastApplicable = -1;
 
     @Override
     public void load(final ConfigurationSection config) {
@@ -26,15 +23,11 @@ public class MaximumSame extends ReasonType {
 
         this.maximum = config.getInt("maximum", this.maximum);
         this.radius = config.getInt("radius", this.radius);
-        this.refresh = config.getLong("refresh", this.refresh);
     }
 
     @Override
     public boolean isApplicable(final CreatureSpawnEvent event) {
         if (!super.isApplicable(event)) return false;
-
-        // Do not recalculate applicability if recent result is still fresh
-        if (System.currentTimeMillis() - this.lastApplicable < this.refresh) return true;
 
         // Increasing radius perimeters from spawn location
         int nearbyType = 0;
@@ -48,11 +41,7 @@ public class MaximumSame extends ReasonType {
                     for (final Entity entity : event.getLocation().getWorld().getChunkAt(x + modX, z + modZ).getEntities())
                         if (entity.getType() == event.getEntityType()) {
                             nearbyType++;
-                            if (nearbyType == this.maximum) {
-                                // Cache applicability
-                                this.lastApplicable = System.currentTimeMillis();
-                                return true;
-                            }
+                            if (nearbyType == this.maximum) return true;
                         }
 
                 }
@@ -62,7 +51,7 @@ public class MaximumSame extends ReasonType {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + ": [reasons: " + this.reasons + "; types: " + this.types + "; maximum: " + this.maximum + "; radius: " + this.radius + "; refresh: " + this.refresh + "]";
+        return this.getClass().getSimpleName() + ": [reasons: " + this.reasons + "; types: " + this.types + "; maximum: " + this.maximum + "; radius: " + this.radius + "]";
     }
 
 }
