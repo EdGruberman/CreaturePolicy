@@ -11,9 +11,24 @@ public class MaximumSame extends ReasonType {
 
     protected static final int DEFAULT_MAXIMUM = -1;
     protected static final int DEFAULT_RADIUS = -1;
+    protected static final boolean DEFAULT_SHARED = false;
 
+    /**
+     * Maximum count of same type of entities allowed within radius.
+     */
     protected int maximum = MaximumSame.DEFAULT_MAXIMUM;
+
+    /**
+     * Number of chunks outward from spawn location to count entities against
+     * maximum.
+     */
     protected int radius = MaximumSame.DEFAULT_RADIUS;
+
+    /**
+     * true to divide maximum by the total number of online players; false
+     * to use the maximum independently of player count.
+     */
+    protected boolean shared = MaximumSame.DEFAULT_SHARED;
 
     @Override
     public void load(final ConfigurationSection config) {
@@ -23,11 +38,14 @@ public class MaximumSame extends ReasonType {
 
         this.maximum = config.getInt("maximum", this.maximum);
         this.radius = config.getInt("radius", this.radius);
+        this.shared = config.getBoolean("shared", this.shared);
     }
 
     @Override
     public boolean isApplicable(final CreatureSpawnEvent event) {
         if (!super.isApplicable(event)) return false;
+
+        final int maximum = (this.shared ? (this.maximum / this.policy.publisher.plugin.getServer().getOfflinePlayers().length) : this.maximum);
 
         // Increasing radius perimeters from spawn location
         int nearbyType = 0;
@@ -41,7 +59,7 @@ public class MaximumSame extends ReasonType {
                     for (final Entity entity : event.getLocation().getWorld().getChunkAt(x + modX, z + modZ).getEntities())
                         if (entity.getType() == event.getEntityType()) {
                             nearbyType++;
-                            if (nearbyType == this.maximum) return true;
+                            if (nearbyType == maximum) return true;
                         }
 
                 }
