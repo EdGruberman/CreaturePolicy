@@ -9,8 +9,19 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
  */
 public class MaximumSame extends ReasonType {
 
+    /**
+     * No limit.
+     */
     protected static final int DEFAULT_MAXIMUM = -1;
-    protected static final int DEFAULT_RADIUS = -1;
+
+    /**
+     * Only count entities in the same chunk spawn is occurring in.
+     */
+    protected static final int DEFAULT_RADIUS = 0;
+
+    /**
+     * Treat maximum as per spawner, independent of player count.
+     */
     protected static final boolean DEFAULT_SHARED = false;
 
     /**
