@@ -35,7 +35,8 @@ public class ReasonType extends Rule {
 
     @Override
     public boolean isApplicable(final CreatureSpawnEvent event) {
-        return this.reasons.contains(event.getSpawnReason()) && this.types.contains(event.getEntityType());
+        return   (this.reasons.size() == 0 || this.reasons.contains(event.getSpawnReason()))
+                && (this.types.size() == 0 || this.types.contains(event.getEntityType()));
     }
 
     @Override
