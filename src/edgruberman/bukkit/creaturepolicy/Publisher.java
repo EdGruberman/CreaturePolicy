@@ -12,7 +12,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.Plugin;
 
 /**
- * Applies policies to worlds.
+ * Applies policies to worlds
  */
 public final class Publisher implements Listener {
 

@@ -11,7 +11,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import edgruberman.bukkit.creaturepolicy.Rule;
 
 /**
- * Applicability determined by spawn reason and creature type.
+ * Applicability determined by spawn reason and creature type
  */
 public class ReasonType extends Rule {
 

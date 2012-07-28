@@ -15,7 +15,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
 /**
- * Updates publisher managed policies based on world loading/unloading.
+ * Updates publisher managed policies based on world loading/unloading
  */
 public class Editor implements Listener {
 

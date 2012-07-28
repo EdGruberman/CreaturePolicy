@@ -15,65 +15,26 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
 /**
- * Applicability determined by how many of the same type of entities are nearby.
+ * Applicability determined by how many of the same type of entities are nearby
  */
 public class MaximumSame extends ReasonType implements Listener {
 
-    /**
-     * No limit.
-     */
-    protected static final int DEFAULT_MAXIMUM = -1;
+    /** Maximum count of same type of entities allowed within radius */
+    protected int maximum = -1; // No Limit
 
-    /**
-     * No least limit.
-     */
-    protected static final int DEFAULT_LEAST = Integer.MAX_VALUE;
+    /** Least maximum possible */
+    protected int least = Integer.MAX_VALUE; // No least limit
 
-    /**
-     * Only count entities in the same chunk spawn is occurring in.
-     */
-    protected static final int DEFAULT_RADIUS = 0;
+    /** Number of chunks outward from spawn location to count entities against maximum */
+    protected int radius = 0; // Only count entities in the same chunk spawn is occurring in
 
-    /**
-     * Treat maximum as per spawner, independent of player count.
-     */
-    protected static final boolean DEFAULT_SHARED = false;
+    /** true to divide maximum by the total number of online players; false to use the maximum independently of player count */
+    protected boolean shared = false; // Treat maximum as per spawner, independent of player count
 
-    /**
-     * Do not cache last applicability; Count entities each spawn.
-     */
-    protected static final long DEFAULT_CACHE = -1;
+    /** MilliSeconds to cache last applicability calculation */
+    protected long cache = -1; // Maximum count of same type of entities allowed within radius
 
-    /**
-     * Maximum count of same type of entities allowed within radius.
-     */
-    protected int maximum = MaximumSame.DEFAULT_MAXIMUM;
-
-    /**
-     * Least maximum possible.
-     */
-    protected int least = MaximumSame.DEFAULT_LEAST;
-
-    /**
-     * Number of chunks outward from spawn location to count entities against
-     * maximum.
-     */
-    protected int radius = MaximumSame.DEFAULT_RADIUS;
-
-    /**
-     * true to divide maximum by the total number of online players; false
-     * to use the maximum independently of player count.
-     */
-    protected boolean shared = MaximumSame.DEFAULT_SHARED;
-
-    /**
-     * MilliSeconds to cache last applicability calculation.
-     */
-    protected long cache = MaximumSame.DEFAULT_CACHE;
-
-    /**
-     * Relates a chunk to the last time entities were counted for this rule.
-     */
+    /** Relates a chunk to the last time entities were counted for this rule */
     protected Map<Long, Applicability> last = new HashMap<Long, Applicability>();
 
     @Override
@@ -120,9 +81,7 @@ public class MaximumSame extends ReasonType implements Listener {
         return result;
     }
 
-    /**
-     * Increasing radius perimeters outwards from spawn location.
-     */
+    // Increasing radius perimeters outwards from spawn location
     private boolean maximumReached(final int maximum, final Chunk spawn, final EntityType type) {
         int nearbyType = 0;
         for (int perimeter = 0; perimeter <= this.radius; perimeter++)

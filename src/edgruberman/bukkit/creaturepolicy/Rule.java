@@ -4,7 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
 /**
- * Criteria for allowing or denying a creature spawn.
+ * Criteria for allowing or denying a creature spawn
  */
 public abstract class Rule {
 

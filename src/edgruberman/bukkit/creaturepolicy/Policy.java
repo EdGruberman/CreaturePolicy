@@ -8,7 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
 /**
- * List of rules that define allowable creature spawns.
+ * List of rules that define allowable creature spawns
  */
 public final class Policy {
 
@@ -18,7 +18,7 @@ public final class Policy {
     public final Publisher publisher;
 
     /**
-     * Default allow action to apply if no rules are applicable.
+     * Default allow action to apply if no rules are applicable
      */
     private boolean defaultAllow = Policy.DEFAULT_DEFAULT_ALLOW;
     private final List<Rule> rules = new ArrayList<Rule>();
@@ -38,8 +38,8 @@ public final class Policy {
     }
 
     /**
-     * First applicable rule defines if spawn is allowed or denied.  If no
-     * rule applies, policy default is returned.
+     * First applicable rule defines if spawn is allowed or denied; If no
+     * rule applies, policy default is returned
      */
     boolean isAllowed(final CreatureSpawnEvent event) {
         for (final Rule rule : this.rules) {

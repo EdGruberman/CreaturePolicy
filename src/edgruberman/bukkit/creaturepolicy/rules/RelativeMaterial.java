@@ -11,18 +11,14 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-/**
- * Applicability determined by comparing material relative to spawn location.
- */
+/** Applicability determined by comparing material relative to spawn location */
 public class RelativeMaterial extends ReasonType {
 
-    protected static final BlockFace DEFAULT_RELATIVE = BlockFace.DOWN;
+    /** Relative to spawn location */
+    protected BlockFace relative = BlockFace.DOWN;
 
-    /**
-     * Material Type IDs and associated byte data.  If no data list items exist, any data will apply.
-     */
+    /** Material Type IDs and associated byte data; If no data list items exist, any data will apply */
     protected final Map<Integer, List<Byte>> materials = new HashMap<Integer, List<Byte>>();
-    protected BlockFace relative = RelativeMaterial.DEFAULT_RELATIVE;
 
     @Override
     public void load(final ConfigurationSection config) {
