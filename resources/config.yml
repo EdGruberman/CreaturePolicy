@@ -1,2 +1,5 @@
-exclude: []
 logLevel: INFO
+exclude: []
+messages:
+    reload: '-> CreaturePolicy plugin §2reloaded'
+version: @VERSION@

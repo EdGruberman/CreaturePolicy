@@ -3,3 +3,11 @@ description: Creature spawn control based on rules
 version: @VERSION@
 author: @AUTHOR@
 main: @MAIN@
+commands:
+    'creaturepolicy:reload':
+        description: Reload CreaturePolicy plugin
+        permission: creaturepolicy.reload
+permissions:
+    creaturepolicy.reload:
+        description: Can use reload command
+        default: op
