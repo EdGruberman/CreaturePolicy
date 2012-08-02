@@ -8,21 +8,16 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
-import edgruberman.bukkit.creaturepolicy.Rule;
+import edgruberman.bukkit.creaturepolicy.Policy;
 
-/**
- * Applicability determined by spawn reason and creature type
- */
+/** Applicability determined by spawn reason and creature type */
 public class ReasonType extends Rule {
 
     protected final List<SpawnReason> reasons = new ArrayList<SpawnReason>();
     protected final List<EntityType> types = new ArrayList<EntityType>();
 
-    @Override
-    public void load(final ConfigurationSection config) {
-        if (config == null) return;
-
-        super.load(config);
+    public ReasonType(final Policy policy, final ConfigurationSection config) {
+        super(policy, config);
 
         if (config.isList("reasons"))
             for (final String reason : config.getStringList("reasons"))
@@ -41,7 +36,7 @@ public class ReasonType extends Rule {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + ": [reasons: " + this.reasons + "; types: " + this.types + "]";
+        return super.toString("reasons: " + this.reasons + "; types: " + this.types);
     }
 
 }

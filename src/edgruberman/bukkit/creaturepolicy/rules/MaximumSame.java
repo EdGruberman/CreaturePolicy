@@ -2,7 +2,9 @@ package edgruberman.bukkit.creaturepolicy.rules;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -14,9 +16,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
-/**
- * Applicability determined by how many of the same type of entities are nearby
- */
+import edgruberman.bukkit.creaturepolicy.Policy;
+
+/** Applicability determined by how many of the same type of entities are nearby */
 public class MaximumSame extends ReasonType implements Listener {
 
     /** Maximum count of same type of entities allowed within radius */
@@ -32,25 +34,21 @@ public class MaximumSame extends ReasonType implements Listener {
     protected boolean shared = false; // Treat maximum as per spawner, independent of player count
 
     /** MilliSeconds to cache last applicability calculation */
-    protected long cache = -1; // Maximum count of same type of entities allowed within radius
+    protected long cache = -1; // Do not cache
 
     /** Relates a chunk to the last time entities were counted for this rule */
     protected Map<Long, Applicability> last = new HashMap<Long, Applicability>();
 
-    @Override
-    public void load(final ConfigurationSection config) {
-        if (config == null) return;
-
-        super.load(config);
+    public MaximumSame(final Policy policy, final ConfigurationSection config) {
+        super(policy, config);
 
         this.maximum = config.getInt("maximum", this.maximum);
         this.least = config.getInt("least", this.least);
         this.radius = config.getInt("radius", this.radius);
         this.shared = config.getBoolean("shared", this.shared);
-        this.cache = config.getLong("cache", this.cache);
+        this.cache = (config.getLong("cache") > 0 ? TimeUnit.SECONDS.toMillis(config.getLong("cache")) : config.getLong("cache"));
 
-        if (this.cache > 0)
-            this.policy.publisher.plugin.getServer().getPluginManager().registerEvents(this, this.policy.publisher.plugin);
+        if (this.cache > 0) Bukkit.getPluginManager().registerEvents(this, this.policy.publisher.plugin);
     }
 
     @Override
@@ -73,7 +71,7 @@ public class MaximumSame extends ReasonType implements Listener {
                 return applicability.result;
         }
 
-        final int maximum = (this.shared ? Math.max(this.least, this.maximum / this.policy.publisher.plugin.getServer().getOnlinePlayers().length) : this.maximum);
+        final int maximum = (this.shared ? Math.max(this.least, this.maximum / Bukkit.getServer().getOnlinePlayers().length) : this.maximum);
         final boolean result = this.maximumReached(maximum, event.getLocation().getChunk(), event.getEntityType());
         if (this.cache <= 0) return result;
 
@@ -86,7 +84,7 @@ public class MaximumSame extends ReasonType implements Listener {
         int nearbyType = 0;
         for (int perimeter = 0; perimeter <= this.radius; perimeter++)
             for (int modX = -perimeter; modX <= perimeter ; modX++ )
-                for (int modZ = -perimeter; modZ <= perimeter ; modZ++ ) {
+                for (int modZ = -perimeter; modZ <= perimeter ; modZ++) {
                     if (Math.abs(modX) != perimeter && Math.abs(modZ) != perimeter) continue;
 
                     for (final Entity entity : spawn.getWorld().getChunkAt(spawn.getX() + modX, spawn.getZ() + modZ).getEntities())
@@ -102,8 +100,9 @@ public class MaximumSame extends ReasonType implements Listener {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + ": [reasons: " + this.reasons + "; types: " + this.types
-                + "; maximum: " + this.maximum + "; radius: " + this.radius + "; shared: " + this.shared + "; cache: " + this.cache + "]";
+        return super.toString("reasons: " + this.reasons + "; types: " + this.types
+                + "; maximum: " + this.maximum + "; least: " + this.least + "; radius: " + this.radius
+                + "; shared: " + this.shared + "; cache: " + (this.cache > 0 ? TimeUnit.MILLISECONDS.toSeconds(this.cache) : this.cache));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -115,9 +114,9 @@ public class MaximumSame extends ReasonType implements Listener {
         return ((long) chunk.getX() << 32) + (chunk.getZ() - Integer.MIN_VALUE);
     }
 
-    private class Applicability {
+    private static final class Applicability {
 
-        long last;
+        final long last;
         boolean result;
 
         Applicability(final long last, final boolean result) {

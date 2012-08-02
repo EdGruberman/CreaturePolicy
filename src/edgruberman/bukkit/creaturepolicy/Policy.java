@@ -7,87 +7,74 @@ import java.util.logging.Level;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-/**
- * List of rules that define allowable creature spawns
- */
+import edgruberman.bukkit.creaturepolicy.rules.DefaultRule;
+import edgruberman.bukkit.creaturepolicy.rules.Rule;
+
+/** Collection of rules that define whether to allow or deny a creature spawn */
 public final class Policy {
 
-    public static final boolean DEFAULT_DEFAULT_ALLOW = true;
-
-    public final String internalRules = this.getClass().getPackage().getName() + ".rules";
     public final Publisher publisher;
 
-    /**
-     * Default allow action to apply if no rules are applicable
-     */
-    private boolean defaultAllow = Policy.DEFAULT_DEFAULT_ALLOW;
+    /** Default rule to apply when no other rules are applicable */
+    private Rule defaultRule = new DefaultRule(this);
     private final List<Rule> rules = new ArrayList<Rule>();
 
-    Policy(final Publisher publisher, final ConfigurationSection config) {
+    Policy(final Publisher publisher, final ConfigurationSection policyRules) {
         this.publisher = publisher;
-        this.load(config);
+
+        for (final String key : policyRules.getKeys(false)) {
+            if (key.equals(DefaultRule.NAME) && policyRules.isBoolean(key)) {
+                this.defaultRule = new DefaultRule(this, policyRules.getBoolean(key));
+                continue;
+            }
+
+            final ConfigurationSection ruleConfig = policyRules.getConfigurationSection(key);
+            if (!ruleConfig.getBoolean("enabled")) continue;
+
+            Rule rule;
+            try {
+                rule = Rule.create(this, ruleConfig);
+            } catch (final Exception e) {
+                this.publisher.plugin.getLogger().warning("Unable to create rule '" + ruleConfig.getName() + "'; " + e.getClass().getName() + "; " + e.getMessage());
+                continue;
+            }
+
+            if (rule instanceof DefaultRule) {
+                this.defaultRule = rule;
+            } else {
+                this.rules.add(rule);
+            }
+        }
     }
 
-    public boolean isDefaultAllowed() {
-        return this.defaultAllow;
-    }
-
-    public void clear() {
+    void clear() {
         for (final Rule rule : this.rules) rule.clear();
         this.rules.clear();
     }
 
-    /**
-     * First applicable rule defines if spawn is allowed or denied; If no
-     * rule applies, policy default is returned
-     */
-    boolean isAllowed(final CreatureSpawnEvent event) {
-        for (final Rule rule : this.rules) {
-            if (rule.isApplicable(event)) {
-                final boolean allow = rule.isAllowed(event);
-                if (this.publisher.plugin.getLogger().isLoggable(Level.FINER)) this.publisher.plugin.getLogger().finer("Allow: " + allow + "; " + rule.toString());
-                return allow;
-            }
-        }
-
-        return this.defaultAllow;
+    public boolean isDefaultAllowed() {
+        return this.defaultRule.isAllowed();
     }
 
-    private void load(final ConfigurationSection config) {
-        if (config == null) return;
+    /**
+     * First applicable rule defines if spawn is allowed or denied;
+     * If no rule applies, policy default is returned
+     */
+    public boolean isAllowed(final CreatureSpawnEvent event) {
+        for (final Rule rule : this.rules) {
+            if (!rule.isApplicable(event)) continue;
 
-        this.defaultAllow = config.getBoolean("defaultAllow", this.defaultAllow);
-        final ConfigurationSection rulesConfig = config.getConfigurationSection("rules");
-        if (rulesConfig == null) return;
+            if (this.publisher.plugin.getLogger().isLoggable(Level.FINER))
+                this.publisher.plugin.getLogger().finer("Applicable Rule: " + rule.toString());
 
-        for (final String ruleName : rulesConfig.getKeys(false)) {
-            final ConfigurationSection ruleConfig = rulesConfig.getConfigurationSection(ruleName);
-            String type = ruleConfig.getString("type");
-            if (type == null) {
-                this.publisher.plugin.getLogger().warning("Rule missing type: " + ruleName);
-                continue;
-            }
-
-            if (!type.contains(".")) type = this.internalRules + '.' + type;
-
-            Rule rule;
-            try {
-                rule = (Rule) Class.forName(type).newInstance();
-            } catch (final Exception e) {
-                this.publisher.plugin.getLogger().warning("Unable to instantiate rule: " + type + "; " + e.getClass().getName() + ": " + e.getMessage());
-                continue;
-            }
-
-            rule.policy = this;
-            rule.load(ruleConfig);
-            this.rules.add(rule);
+            return rule.isAllowed();
         }
 
-        return;
+        return this.defaultRule.isAllowed();
     }
 
     @Override
     public String toString() {
-        return "Policy: [defaultAllow: " + this.defaultAllow + "; Rules(" + this.rules.size() + "): " + this.rules.toString() + "]";
+        return "Policy: [Default Rule: [" + this.defaultRule.toString() + "], Rules(" + this.rules.size() + "): " + this.rules.toString() + "]";
     }
 }

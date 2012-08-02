@@ -1,5 +1,24 @@
 logLevel: INFO
-exclude: []
-messages:
-    reload: '-> CreaturePolicy plugin §2reloaded'
+policy:
+    defaults:
+        'Limit Spawner Load':
+            enabled: false
+            class: MaximumSame
+            allow: false
+            reasons: [SPAWNER]
+            maximum: 300
+            least: 100
+            radius: 8
+            shared: true
+            cache: 60
+        'No Zombie Pigmen on Rails':
+            enabled: false
+            class: RelativeMaterial
+            allow: false
+            reasons: [NATURAL]
+            types: [PIG_ZOMBIE]
+            materials: [RAILS, POWERED_RAIL, DETECTOR_RAIL]
+            relative: DOWN
+exclude: [world, world_nether, world_the_end]
+reload: '-> CreaturePolicy plugin §2reloaded'
 version: @VERSION@

@@ -11,6 +11,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
+import edgruberman.bukkit.creaturepolicy.Policy;
+
 /** Applicability determined by comparing material relative to spawn location */
 public class RelativeMaterial extends ReasonType {
 
@@ -20,11 +22,8 @@ public class RelativeMaterial extends ReasonType {
     /** Material Type IDs and associated byte data; If no data list items exist, any data will apply */
     protected final Map<Integer, List<Byte>> materials = new HashMap<Integer, List<Byte>>();
 
-    @Override
-    public void load(final ConfigurationSection config) {
-        if (config == null) return;
-
-        super.load(config);
+    public RelativeMaterial(final Policy policy, final ConfigurationSection config) {
+        super(policy, config);
 
         this.materials.clear();
         for (String type: config.getStringList("materials")) {
@@ -90,7 +89,7 @@ public class RelativeMaterial extends ReasonType {
             }
         }
 
-        return this.getClass().getSimpleName() + ": [reasons: " + this.reasons + "; types: " + this.types + "; materials: [" + materials + "]; relative: " + this.relative + "]";
+        return super.toString("reasons: " + this.reasons + "; types: " + this.types + "; materials: [" + materials + "]; relative: " + this.relative);
     }
 
 }

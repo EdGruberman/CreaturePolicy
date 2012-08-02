@@ -13,37 +13,45 @@ import java.util.Date;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import edgruberman.bukkit.creaturepolicy.commands.Reload;
 
 public final class Main extends JavaPlugin {
 
-    private static final Version MINIMUM_CONFIGURATION = new Version("3.4.0");
+    private static final Version MINIMUM_CONFIGURATION = new Version("4.0.0a0");
 
     public static Messenger messenger;
 
     private Publisher publisher;
-    private Editor editor;
 
     @Override
     public void onEnable() {
         this.reloadConfig();
-        Main.messenger = Messenger.load(this, "messages");
-        this.setLogLevel(this.getConfig().getString("logLevel"));
-        this.publisher = new Publisher(this);
-        this.editor = new Editor(this.publisher, this.getConfig().getConfigurationSection("defaultPolicy"), this.getConfig().getStringList("exclude"));
+        Main.messenger = Messenger.load(this);
+        this.publisher = new Publisher(this, this.getDefaultRules(), this.getConfig().getStringList("exclude"));
         this.getCommand("creaturepolicy:reload").setExecutor(new Reload(this));
+    }
+
+    private ConfigurationSection getDefaultRules() {
+        final ConfigurationSection defaults = this.getConfig().getConfigurationSection("policy.defaults");
+        if (defaults != null && defaults.getString("type", "default").equals("default")) return defaults;
+
+        final ConfigurationSection policies = this.getConfig().getConfigurationSection("policy");
+        for (final String name : policies.getKeys(false)) {
+            final ConfigurationSection policy = policies.getConfigurationSection(name);
+            if (policy.getString("type", "world").equals("default")) return policy;
+        }
+
+        return new MemoryConfiguration();
     }
 
     @Override
     public void onDisable() {
-        this.editor.clear();
-        this.editor = null;
-
         this.publisher.clear();
         this.publisher = null;
-
         Main.messenger = null;
     }
 
@@ -53,7 +61,7 @@ public final class Main extends JavaPlugin {
         super.reloadConfig();
         this.setLogLevel(this.getConfig().getString("logLevel"));
 
-        final Version version = new Version(this.getConfig().getString("version"));
+        final Version version = new Version(this.getConfig().isSet("version") ? this.getConfig().getString("version") : null);
         if (version.compareTo(Main.MINIMUM_CONFIGURATION) >= 0) return;
 
         this.archiveConfig("config.yml", version);
