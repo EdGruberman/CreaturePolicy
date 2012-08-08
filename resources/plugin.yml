@@ -1,5 +1,6 @@
 name: @NAME@
 description: Creature spawn control based on rules
+softdepend: [TimeService]
 version: @VERSION@
 author: @AUTHOR@
 main: @MAIN@
@@ -7,6 +8,7 @@ commands:
     'creaturepolicy:reload':
         description: Reload CreaturePolicy plugin
         permission: creaturepolicy.reload
+        usage: /<command>
 permissions:
     creaturepolicy.reload:
         description: Can use reload command
