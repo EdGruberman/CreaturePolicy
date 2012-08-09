@@ -1,5 +1,6 @@
 package edgruberman.bukkit.creaturepolicy;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Matcher;
@@ -50,6 +51,8 @@ public final class Version implements Comparable<Version> {
         if (this.original != null && other.original == null) return 1;
         if (this.original == null && other.original == null) return 0;
         if (this.original == null && other.original != null) return -1;
+
+        if (this.original.equals(other.original)) return 0;
 
         // Determine what is different, favoring the more important segments first
         if (this.major != other.major) return this.major.compareTo(other.major);
