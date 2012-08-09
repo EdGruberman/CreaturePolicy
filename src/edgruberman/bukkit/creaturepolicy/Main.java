@@ -18,19 +18,21 @@ import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import edgruberman.bukkit.creaturepolicy.commands.Reload;
+import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
+import edgruberman.bukkit.messaging.couriers.TimestampedConfigurationCourier;
 
 public final class Main extends JavaPlugin {
 
-    private static final Version MINIMUM_CONFIGURATION = new Version("4.0.0a0");
+    private static final Version MINIMUM_CONFIGURATION = new Version("4.1.0");
 
-    public static Messenger messenger;
+    public static ConfigurationCourier courier;
 
     private Publisher publisher;
 
     @Override
     public void onEnable() {
         this.reloadConfig();
-        Main.messenger = Messenger.load(this);
+        Main.courier = new TimestampedConfigurationCourier(this);
         this.publisher = new Publisher(this, this.getDefaultRules(), this.getConfig().getStringList("exclude"));
         this.getCommand("creaturepolicy:reload").setExecutor(new Reload(this));
     }
@@ -52,7 +54,7 @@ public final class Main extends JavaPlugin {
     public void onDisable() {
         this.publisher.clear();
         this.publisher = null;
-        Main.messenger = null;
+        Main.courier = null;
     }
 
     @Override

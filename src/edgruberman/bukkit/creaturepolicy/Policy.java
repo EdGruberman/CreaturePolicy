@@ -10,12 +10,12 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import edgruberman.bukkit.creaturepolicy.rules.DefaultRule;
 import edgruberman.bukkit.creaturepolicy.rules.Rule;
 
-/** Collection of rules that define whether to allow or deny a creature spawn */
+/** collection of rules that define whether to allow or deny a creature spawn */
 public final class Policy {
 
     public final Publisher publisher;
 
-    /** Default rule to apply when no other rules are applicable */
+    /** default rule to apply when no other rules are applicable */
     private Rule defaultRule = new DefaultRule(this);
     private final List<Rule> rules = new ArrayList<Rule>();
 
@@ -56,16 +56,13 @@ public final class Policy {
         return this.defaultRule.isAllowed();
     }
 
-    /**
-     * First applicable rule defines if spawn is allowed or denied;
-     * If no rule applies, policy default is returned
-     */
+    /** first applicable rule defines if spawn is allowed or denied; if no rule applies, policy default is returned */
     public boolean isAllowed(final CreatureSpawnEvent event) {
         for (final Rule rule : this.rules) {
             if (!rule.isApplicable(event)) continue;
 
-            if (this.publisher.plugin.getLogger().isLoggable(Level.FINER))
-                this.publisher.plugin.getLogger().finer("Applicable Rule: " + rule.toString());
+            if (this.publisher.plugin.getLogger().isLoggable(Level.FINEST))
+                this.publisher.plugin.getLogger().finest("Applicable Rule: " + rule.toString());
 
             return rule.isAllowed();
         }
@@ -77,4 +74,5 @@ public final class Policy {
     public String toString() {
         return "Policy: [Default Rule: [" + this.defaultRule.toString() + "], Rules(" + this.rules.size() + "): " + this.rules.toString() + "]";
     }
+
 }
