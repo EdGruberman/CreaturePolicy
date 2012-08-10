@@ -1,4 +1,4 @@
-package edgruberman.bukkit.messaging.messages;
+package edgruberman.bukkit.creaturepolicy.messaging.messages;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-import edgruberman.bukkit.messaging.Message;
+import edgruberman.bukkit.creaturepolicy.messaging.Message;
 
 public class ConfigurationMessage extends Message {
 

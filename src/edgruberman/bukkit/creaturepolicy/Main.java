@@ -18,8 +18,8 @@ import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import edgruberman.bukkit.creaturepolicy.commands.Reload;
-import edgruberman.bukkit.messaging.couriers.ConfigurationCourier;
-import edgruberman.bukkit.messaging.couriers.TimestampedConfigurationCourier;
+import edgruberman.bukkit.creaturepolicy.messaging.couriers.ConfigurationCourier;
+import edgruberman.bukkit.creaturepolicy.messaging.couriers.TimestampedConfigurationCourier;
 
 public final class Main extends JavaPlugin {
 

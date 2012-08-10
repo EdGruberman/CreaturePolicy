@@ -1,9 +1,9 @@
-package edgruberman.bukkit.messaging.messages;
+package edgruberman.bukkit.creaturepolicy.messaging.messages;
 
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import edgruberman.bukkit.messaging.Message;
+import edgruberman.bukkit.creaturepolicy.messaging.Message;
 
 public class Confirmation extends Message {
 

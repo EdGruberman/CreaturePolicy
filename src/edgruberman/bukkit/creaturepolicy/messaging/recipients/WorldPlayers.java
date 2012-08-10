@@ -1,4 +1,4 @@
-package edgruberman.bukkit.messaging.recipients;
+package edgruberman.bukkit.creaturepolicy.messaging.recipients;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -6,9 +6,9 @@ import java.util.logging.Level;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import edgruberman.bukkit.messaging.Message;
-import edgruberman.bukkit.messaging.Recipients;
-import edgruberman.bukkit.messaging.messages.Confirmation;
+import edgruberman.bukkit.creaturepolicy.messaging.Message;
+import edgruberman.bukkit.creaturepolicy.messaging.Recipients;
+import edgruberman.bukkit.creaturepolicy.messaging.messages.Confirmation;
 
 public class WorldPlayers implements Recipients {
 

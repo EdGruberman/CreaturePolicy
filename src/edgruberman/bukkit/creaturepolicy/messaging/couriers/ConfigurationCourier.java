@@ -1,18 +1,18 @@
-package edgruberman.bukkit.messaging.couriers;
+package edgruberman.bukkit.creaturepolicy.messaging.couriers;
 
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
-import edgruberman.bukkit.messaging.Courier;
-import edgruberman.bukkit.messaging.Message;
-import edgruberman.bukkit.messaging.Recipients;
-import edgruberman.bukkit.messaging.messages.ConfigurationMessage;
-import edgruberman.bukkit.messaging.recipients.PermissionSubscribers;
-import edgruberman.bukkit.messaging.recipients.Sender;
-import edgruberman.bukkit.messaging.recipients.ServerPlayers;
-import edgruberman.bukkit.messaging.recipients.WorldPlayers;
+import edgruberman.bukkit.creaturepolicy.messaging.Courier;
+import edgruberman.bukkit.creaturepolicy.messaging.Message;
+import edgruberman.bukkit.creaturepolicy.messaging.Recipients;
+import edgruberman.bukkit.creaturepolicy.messaging.messages.ConfigurationMessage;
+import edgruberman.bukkit.creaturepolicy.messaging.recipients.PermissionSubscribers;
+import edgruberman.bukkit.creaturepolicy.messaging.recipients.Sender;
+import edgruberman.bukkit.creaturepolicy.messaging.recipients.ServerPlayers;
+import edgruberman.bukkit.creaturepolicy.messaging.recipients.WorldPlayers;
 
 public class ConfigurationCourier extends Courier {
 
@@ -36,10 +36,13 @@ public class ConfigurationCourier extends Courier {
     }
 
     public ConfigurationSection getBase() {
+        if (this.base != null)
+            return this.base;
+
         if (this.basePath != null)
             return this.plugin.getConfig().getConfigurationSection(this.basePath);
 
-        return this.base;
+        return this.plugin.getConfig();
     }
 
     public String format(final String path, final Object... args) {
