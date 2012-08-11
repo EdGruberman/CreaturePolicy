@@ -10,7 +10,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 import edgruberman.bukkit.creaturepolicy.Policy;
 
-/** Applicability determined by spawn reason and creature type */
+/** applicability determined by spawn reason and creature type */
 public class ReasonType extends Rule {
 
     protected final List<SpawnReason> reasons = new ArrayList<SpawnReason>();

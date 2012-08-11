@@ -13,13 +13,13 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import edgruberman.bukkit.creaturepolicy.Policy;
 
-/** Applicability determined by comparing material relative to spawn location */
+/** applicability determined by comparing material relative to spawn location */
 public class RelativeMaterial extends ReasonType {
 
-    /** Relative to spawn location */
+    /** relative to spawn location */
     protected BlockFace relative = BlockFace.DOWN;
 
-    /** Material Type IDs and associated byte data; If no data list items exist, any data will apply */
+    /** material Type IDs and associated byte data; If no data list items exist, any data will apply */
     protected final Map<Integer, List<Byte>> materials = new HashMap<Integer, List<Byte>>();
 
     public RelativeMaterial(final Policy policy, final ConfigurationSection config) {
@@ -37,7 +37,7 @@ public class RelativeMaterial extends ReasonType {
             try {
                 material = Material.valueOf(type);
             } catch (final Throwable t) {
-                this.policy.publisher.plugin.getLogger().warning("Unable to identify Material type: " + type + "; " + t.getClass().getName() + ": " + t.getMessage());
+                policy.publisher.plugin.getLogger().warning("Unable to identify Material type: " + type + "; " + t.getClass().getName() + ": " + t.getMessage());
                 continue;
             }
 
@@ -50,7 +50,7 @@ public class RelativeMaterial extends ReasonType {
         try {
             this.relative = BlockFace.valueOf(config.getString("relative", this.relative.name()));
         } catch (final Throwable t) {
-            this.policy.publisher.plugin.getLogger().warning("Unable to identify relative BlockFace: " + config.getString("relative") + "; Defaulting to " + this.relative.name() + "; " + t.getClass().getName() + ": " + t.getMessage());
+            policy.publisher.plugin.getLogger().warning("Unable to identify relative BlockFace: " + config.getString("relative") + "; Defaulting to " + this.relative.name() + "; " + t.getClass().getName() + ": " + t.getMessage());
         }
     }
 
@@ -67,7 +67,7 @@ public class RelativeMaterial extends ReasonType {
         if (matched.size() > 0)
             return matched.contains(relativeLocation.getWorld().getBlockAt(relativeLocation).getData());
 
-        // Any data matches, if none defined
+        // any data matches, if none defined
         return true;
     }
 

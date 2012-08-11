@@ -8,12 +8,10 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import edgruberman.bukkit.creaturepolicy.Policy;
 
-/**
- * Criteria for allowing or denying a creature spawn
- */
+/** criteria for allowing or denying a creature spawn */
 public abstract class Rule {
 
-    // ---- Static Factory ----
+    // ---- static factory ----
 
     public static Rule create(final Policy policy, final ConfigurationSection definition) throws ClassNotFoundException, ClassCastException, InstantiationException, IllegalAccessException, SecurityException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
         final Class<? extends Rule> subClass = Rule.find(definition.getString("class"));
@@ -35,16 +33,18 @@ public abstract class Rule {
 
 
 
-    // ---- Instance ----
+    // ---- instance ----
 
     public final Policy policy;
     public final String name;
-    protected boolean allow;
+    protected final boolean active;
+    protected final boolean allow;
 
     protected Rule(final Policy policy, final ConfigurationSection config) {
         this.policy = policy;
         this.name = config.getName();
-        this.allow = config.getBoolean("allow", (this instanceof DefaultRule ? true : !this.policy.isDefaultAllowed())); // Assume exception
+        this.active = config.getBoolean("active");
+        this.allow = config.getBoolean("allow", (this instanceof DefaultRule ? true : !policy.isDefaultAllowed())); // Assume exception
     }
 
     public void clear() {}
@@ -53,8 +53,12 @@ public abstract class Rule {
         return true;
     }
 
-    public final boolean isAllowed() {
+    public boolean isAllowed() {
         return this.allow;
+    }
+
+    public boolean isActive() {
+        return this.active;
     }
 
     @Override

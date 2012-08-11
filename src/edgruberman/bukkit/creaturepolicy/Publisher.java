@@ -20,7 +20,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
 
-/** Applies policies to worlds */
+/** applies policies to worlds */
 public class Publisher implements Listener {
 
     public final Plugin plugin;
@@ -82,15 +82,7 @@ public class Publisher implements Listener {
 
         if (policy.isAllowed(event)) return;
 
-        if (this.plugin.getLogger().isLoggable(Level.FINEST)) {
-            this.plugin.getLogger().finest(
-                    "Cancelling " + event.getSpawnReason().name() + " " + event.getEntityType().getName()
-                        + " spawn in [" + event.getLocation().getWorld().getName() + "] at"
-                        + " x: " + event.getLocation().getBlockX()
-                        + " y: " + event.getLocation().getBlockY()
-                        + " z: " + event.getLocation().getBlockZ()
-            );
-        }
+        this.plugin.getLogger().log(Level.FINEST, "Cancelling {0} {1} spawn at {2}", new Object[]{event.getSpawnReason(), event.getEntityType(), event.getLocation()});
         event.setCancelled(true);
     }
 

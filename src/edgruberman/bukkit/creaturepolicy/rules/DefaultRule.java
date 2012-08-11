@@ -5,7 +5,7 @@ import org.bukkit.configuration.MemoryConfiguration;
 
 import edgruberman.bukkit.creaturepolicy.Policy;
 
-/** Always applicable */
+/** always applicable */
 public class DefaultRule extends Rule {
 
     public static final String NAME = "allow";
@@ -18,17 +18,17 @@ public class DefaultRule extends Rule {
         DefaultRule.FALSE.set("allow", false);
     }
 
-    /** Create rule that is always applicable and always allows spawns */
+    /** create rule that is always applicable and always allows spawns */
     public DefaultRule(final Policy policy) {
         this(policy, DefaultRule.TRUE);
     }
 
-    /** Create rule that is always applicable and allows spawns as supplied */
+    /** create rule that is always applicable and allows spawns as supplied */
     public DefaultRule(final Policy policy, final boolean allow) {
         this(policy, (allow ? DefaultRule.TRUE : DefaultRule.FALSE));
     }
 
-    /** Create rule that is always applicable and allows spawns as defined in configuration */
+    /** create rule that is always applicable and allows spawns as defined in configuration */
     public DefaultRule(final Policy policy, final ConfigurationSection config) {
         super(policy, config);
     }

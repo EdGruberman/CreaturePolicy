@@ -28,16 +28,14 @@ public final class Policy {
                 continue;
             }
 
-            final ConfigurationSection ruleConfig = policyRules.getConfigurationSection(key);
-            if (!ruleConfig.getBoolean("enabled")) continue;
-
             Rule rule;
             try {
-                rule = Rule.create(this, ruleConfig);
+                rule = Rule.create(this, policyRules.getConfigurationSection(key));
             } catch (final Exception e) {
-                this.publisher.plugin.getLogger().warning("Unable to create rule '" + ruleConfig.getName() + "'; " + e.getClass().getName() + "; " + e.getMessage());
+                this.publisher.plugin.getLogger().warning("Unable to create rule '" + key + "'; " + e.getClass().getName() + "; " + e.getMessage());
                 continue;
             }
+            if (!rule.isActive()) continue;
 
             if (rule instanceof DefaultRule) {
                 this.defaultRule = rule;
@@ -61,9 +59,7 @@ public final class Policy {
         for (final Rule rule : this.rules) {
             if (!rule.isApplicable(event)) continue;
 
-            if (this.publisher.plugin.getLogger().isLoggable(Level.FINEST))
-                this.publisher.plugin.getLogger().finest("Applicable Rule: " + rule.toString());
-
+            this.publisher.plugin.getLogger().log(Level.FINEST, "Applicable Rule: {0}", rule);
             return rule.isAllowed();
         }
 

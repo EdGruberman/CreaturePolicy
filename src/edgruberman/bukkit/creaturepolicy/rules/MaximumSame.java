@@ -18,25 +18,25 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 
 import edgruberman.bukkit.creaturepolicy.Policy;
 
-/** Applicability determined by how many of the same type of entities are nearby */
+/** applicability determined by how many of the same type of entities are nearby */
 public class MaximumSame extends ReasonType implements Listener {
 
-    /** Maximum count of same type of entities allowed within radius */
-    protected int maximum = -1; // No Limit
+    /** maximum count of same type of entities allowed within radius */
+    protected int maximum = -1; // no limit
 
-    /** Least maximum possible */
-    protected int least = Integer.MAX_VALUE; // No least limit
+    /** least maximum possible */
+    protected int least = Integer.MAX_VALUE; // no least limit
 
-    /** Number of chunks outward from spawn location to count entities against maximum */
-    protected int radius = 0; // Only count entities in the same chunk spawn is occurring in
+    /** number of chunks outward from spawn location to count entities against maximum */
+    protected int radius = 0; // only count entities in the same chunk spawn is occurring in
 
     /** true to divide maximum by the total number of online players; false to use the maximum independently of player count */
-    protected boolean shared = false; // Treat maximum as per spawner, independent of player count
+    protected boolean shared = false; // treat maximum as per spawner, independent of player count
 
-    /** MilliSeconds to cache last applicability calculation */
-    protected long cache = -1; // Do not cache
+    /** milliseconds to cache last applicability calculation */
+    protected long cache = -1; // do not cache
 
-    /** Relates a chunk to the last time entities were counted for this rule */
+    /** relates a chunk to the last time entities were counted for this rule */
     protected Map<Long, Applicability> last = new HashMap<Long, Applicability>();
 
     public MaximumSame(final Policy policy, final ConfigurationSection config) {
@@ -46,9 +46,9 @@ public class MaximumSame extends ReasonType implements Listener {
         this.least = config.getInt("least", this.least);
         this.radius = config.getInt("radius", this.radius);
         this.shared = config.getBoolean("shared", this.shared);
-        this.cache = (config.getLong("cache") > 0 ? TimeUnit.SECONDS.toMillis(config.getLong("cache")) : config.getLong("cache"));
+        this.cache = (config.getLong("cache", this.cache) > 0 ? TimeUnit.SECONDS.toMillis(config.getLong("cache")) : config.getLong("cache"));
 
-        if (this.cache > 0) Bukkit.getPluginManager().registerEvents(this, this.policy.publisher.plugin);
+        if (this.cache > 0) Bukkit.getPluginManager().registerEvents(this, policy.publisher.plugin);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class MaximumSame extends ReasonType implements Listener {
     public boolean isApplicable(final CreatureSpawnEvent event) {
         if (!super.isApplicable(event)) return false;
 
-        // Use last applicable result if caching is enabled and cache is not stale
+        // use last applicable result if caching is enabled and cache is not stale
         long chunkId = -1;
         if (this.cache > 0) {
             chunkId = MaximumSame.biject(event.getLocation().getChunk());
@@ -79,7 +79,7 @@ public class MaximumSame extends ReasonType implements Listener {
         return result;
     }
 
-    // Increasing radius perimeters outwards from spawn location
+    // increasing radius perimeters outwards from spawn location
     private boolean maximumReached(final int maximum, final Chunk spawn, final EntityType type) {
         int nearbyType = 0;
         for (int perimeter = 0; perimeter <= this.radius; perimeter++)
