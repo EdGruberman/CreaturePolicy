@@ -23,7 +23,7 @@ import edgruberman.bukkit.creaturepolicy.messaging.couriers.TimestampedConfigura
 
 public final class Main extends JavaPlugin {
 
-    private static final Version MINIMUM_CONFIGURATION = new Version("4.1.0");
+    private static final Version MINIMUM_CONFIGURATION = new Version("4.2.0");
 
     public static ConfigurationCourier courier;
 

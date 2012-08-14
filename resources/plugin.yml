@@ -1,6 +1,5 @@
 name: @NAME@
 description: Creature spawn control based on rules
-softdepend: [TimeService]
 version: @VERSION@
 author: @AUTHOR@
 main: @MAIN@

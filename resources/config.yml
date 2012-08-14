@@ -20,5 +20,5 @@ policy:
             materials: [RAILS, POWERED_RAIL, DETECTOR_RAIL]
             relative: DOWN
 exclude: [world, world_nether, world_the_end]
-reload: '-> %2$s plugin §2reloaded' # 2 = Plugin Name
+reload: '-> {1} plugin §2reloaded' # 1 = Plugin
 version: @VERSION@
