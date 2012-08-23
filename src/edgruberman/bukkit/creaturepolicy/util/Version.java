@@ -1,5 +1,4 @@
-package edgruberman.bukkit.creaturepolicy;
-
+package edgruberman.bukkit.creaturepolicy.util;
 
 import java.util.ArrayList;
 import java.util.Collection;

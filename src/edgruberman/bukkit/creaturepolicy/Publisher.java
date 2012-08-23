@@ -42,7 +42,7 @@ public class Publisher implements Listener {
 
     private void loadPolicy(final World world) {
         if (this.exclude.contains(world.getName())) {
-            this.plugin.getLogger().config("Excluding creature spawn policy management for world: " + world.getName());
+            this.plugin.getLogger().log(Level.CONFIG, "Excluding creature spawn policy management for world: {0}", world.getName());
             return;
         }
 
@@ -55,7 +55,7 @@ public class Publisher implements Listener {
 
         final Policy policy = new Policy(this, rules);
         this.policies.put(world, policy);
-        this.plugin.getLogger().config("Loaded policy for world [" + world.getName() + "]: " + policy.toString());
+        this.plugin.getLogger().log(Level.CONFIG, "Loaded policy for world [{0}]: {1}", new Object[] { world.getName(), policy });
     }
 
     void clear() {
