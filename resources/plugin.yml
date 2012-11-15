@@ -1,8 +1,9 @@
-name: @NAME@
-description: Creature spawn control based on rules
+name: CreaturePolicy
 version: @VERSION@
-author: @AUTHOR@
-main: @MAIN@
+description: Creature spawn control based on rules
+author: EdGruberman (ed@rjump.com)
+website: http://github.com/EdGruberman/CreaturePolicy
+main: edgruberman.bukkit.creaturepolicy.Main
 commands:
     'creaturepolicy:reload':
         description: Reload CreaturePolicy plugin

@@ -15,7 +15,7 @@ public final class Main extends CustomPlugin {
     private Publisher publisher;
 
     @Override
-    public void onLoad() { this.putConfigMinimum("config.yml", "4.2.0"); }
+    public void onLoad() { this.putConfigMinimum(CustomPlugin.CONFIGURATION_FILE, "4.2.0"); }
 
     @Override
     public void onEnable() {
