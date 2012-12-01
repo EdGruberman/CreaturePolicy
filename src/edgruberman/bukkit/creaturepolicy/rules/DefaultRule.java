@@ -4,6 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 
 import edgruberman.bukkit.creaturepolicy.Policy;
+import edgruberman.bukkit.creaturepolicy.Rule;
 
 /** always applicable */
 public class DefaultRule extends Rule {

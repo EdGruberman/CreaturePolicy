@@ -1,8 +1,7 @@
-logLevel: INFO
+log-level: INFO
 policy:
     defaults:
         'Limit Spawner Load':
-            active: false
             class: MaximumSame
             allow: false
             reasons: [SPAWNER]
@@ -12,13 +11,13 @@ policy:
             shared: true
             cache: 60
         'No Zombie Pigmen on Rails':
-            active: false
             class: RelativeMaterial
             allow: false
             reasons: [NATURAL]
-            types: [PIG_ZOMBIE]
+            creatures: [PIG_ZOMBIE]
             materials: [RAILS, POWERED_RAIL, DETECTOR_RAIL]
             relative: DOWN
 exclude: [world, world_nether, world_the_end]
-reload: '-> {1} plugin §2reloaded' # 1 = Plugin
+color-code: '§'
+reload: '-> §7{1} plugin §2reloaded' # 1 = Plugin Name
 version: @VERSION@

@@ -1,6 +1,7 @@
 package edgruberman.bukkit.creaturepolicy.rules;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,44 +15,63 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import edgruberman.bukkit.creaturepolicy.Policy;
 
 /** applicability determined by comparing material relative to spawn location */
-public class RelativeMaterial extends ReasonType {
+public class RelativeMaterial extends Reason {
+
+    /** block below */
+    public final static BlockFace DEFAULT_RELATIVE = BlockFace.DOWN;
+
+    /** no material will match */
+    public final static Map<Integer, List<Byte>> DEFAULT_MATERIALS = Collections.emptyMap();
+
+
 
     /** relative to spawn location */
-    protected BlockFace relative = BlockFace.DOWN;
+    protected final BlockFace relative;
 
     /** material Type IDs and associated byte data; If no data list items exist, any data will apply */
-    protected final Map<Integer, List<Byte>> materials = new HashMap<Integer, List<Byte>>();
+    protected final Map<Integer, List<Byte>> materials;
 
     public RelativeMaterial(final Policy policy, final ConfigurationSection config) {
         super(policy, config);
 
-        this.materials.clear();
-        for (String type: config.getStringList("materials")) {
+        // parse materials
+        final Map<Integer, List<Byte>> materials = new HashMap<Integer, List<Byte>>();
+        for (final String entry: config.getStringList("materials")) {
+            String type = entry;
             Byte data = null;
-            if (type.contains(":")) {
-                type = type.split(":")[0];
-                data = Byte.parseByte(type.split(":")[1]);
+            if (type.contains("/")) {
+                type = entry.split("/")[0];
+                try {
+                    data = Byte.parseByte(entry.split("/")[1]);
+                } catch (final NumberFormatException e) {
+                    policy.publisher.plugin.getLogger().warning("Unable to identify Material data for: " + entry + "; " + e);
+                    continue;
+                }
             }
 
             final Material material;
             try {
                 material = Material.valueOf(type);
-            } catch (final Throwable t) {
-                policy.publisher.plugin.getLogger().warning("Unable to identify Material type: " + type + "; " + t.getClass().getName() + ": " + t.getMessage());
+            } catch (final Exception e) {
+                policy.publisher.plugin.getLogger().warning("Unable to identify Material type: " + entry + "; " + e);
                 continue;
             }
 
-            if (!this.materials.containsKey(material.getId())) this.materials.put(material.getId(), new ArrayList<Byte>());
+            if (!materials.containsKey(material.getId())) materials.put(material.getId(), new ArrayList<Byte>());
             if (data == null) continue;
 
-            this.materials.get(material.getId()).add(data);
+            materials.get(material.getId()).add(data);
         }
+        this.materials = Collections.unmodifiableMap(materials);
 
+        // parse relative
+        BlockFace relative = RelativeMaterial.DEFAULT_RELATIVE;
         try {
-            this.relative = BlockFace.valueOf(config.getString("relative", this.relative.name()));
-        } catch (final Throwable t) {
-            policy.publisher.plugin.getLogger().warning("Unable to identify relative BlockFace: " + config.getString("relative") + "; Defaulting to " + this.relative.name() + "; " + t.getClass().getName() + ": " + t.getMessage());
+            relative = BlockFace.valueOf(config.getString("relative", relative.name()));
+        } catch (final Exception e) {
+            policy.publisher.plugin.getLogger().warning("Unable to identify relative BlockFace: " + config.getString("relative") + "; Defaulting to " + relative.name() + "; " + e);
         }
+        this.relative = relative;
     }
 
     @Override
@@ -64,6 +84,7 @@ public class RelativeMaterial extends ReasonType {
         final List<Byte> matched = this.materials.get(relativeMaterialTypeId);
         if (matched == null) return false;
 
+        // specific data defined must match at least one
         if (matched.size() > 0)
             return matched.contains(relativeLocation.getWorld().getBlockAt(relativeLocation).getData());
 
@@ -73,23 +94,19 @@ public class RelativeMaterial extends ReasonType {
 
     @Override
     public String toString() {
-        String materials = "";
+        final List<String> materials = new ArrayList<String>();
         for (final Map.Entry<Integer, List<Byte>> entry : this.materials.entrySet()) {
             final String name = Material.getMaterial(entry.getKey()).name();
 
             if (entry.getValue().size() == 0) {
-                if (materials.length() != 0) materials += ",";
-                materials += name;
+                materials.add(name);
                 continue;
             }
 
-            for (final Byte data : entry.getValue()) {
-                if (materials.length() != 0) materials += ",";
-                materials += name + ":" + data.toString();
-            }
+            for (final Byte data : entry.getValue()) materials.add(name + "/" + data);
         }
 
-        return super.toString("reasons: " + this.reasons + "; types: " + this.types + "; materials: [" + materials + "]; relative: " + this.relative);
+        return super.toString("reasons: " + this.reasons + "; creatures: " + this.creatures + "; materials: " + materials + "; relative: " + this.relative);
     }
 
 }

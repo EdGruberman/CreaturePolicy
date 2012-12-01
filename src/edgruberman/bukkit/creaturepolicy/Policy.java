@@ -1,5 +1,6 @@
 package edgruberman.bukkit.creaturepolicy;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -8,7 +9,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import edgruberman.bukkit.creaturepolicy.rules.DefaultRule;
-import edgruberman.bukkit.creaturepolicy.rules.Rule;
 
 /** collection of rules that define whether to allow or deny a creature spawn */
 public final class Policy {
@@ -31,11 +31,13 @@ public final class Policy {
             Rule rule;
             try {
                 rule = Rule.create(this, policyRules.getConfigurationSection(key));
+            } catch (final InvocationTargetException e) {
+                this.publisher.plugin.getLogger().warning("Unable to create rule '" + key + "'; " + e.getCause());
+                continue;
             } catch (final Exception e) {
-                this.publisher.plugin.getLogger().warning("Unable to create rule '" + key + "'; " + e.getClass().getName() + "; " + e.getMessage());
+                this.publisher.plugin.getLogger().warning("Unable to create rule '" + key + "'; " + e);
                 continue;
             }
-            if (!rule.isActive()) continue;
 
             if (rule instanceof DefaultRule) {
                 this.defaultRule = rule;
@@ -68,7 +70,7 @@ public final class Policy {
 
     @Override
     public String toString() {
-        return "Policy: [Default Rule: [" + this.defaultRule.toString() + "], Rules(" + this.rules.size() + "): " + this.rules.toString() + "]";
+        return "Policy: [" + this.defaultRule + ", Rules(" + this.rules.size() + "): " + this.rules.toString() + "]";
     }
 
 }

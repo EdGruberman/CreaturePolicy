@@ -47,7 +47,7 @@ public class Publisher implements Listener {
         }
 
         ConfigurationSection specific = this.plugin.getConfig().getConfigurationSection("policy." + world.getName());
-        if (specific == null || !specific.getString("type", "world").equals("world")) specific = new MemoryConfiguration();
+        if (specific == null || !specific.getString("type", "world").toLowerCase().equals("world")) specific = new MemoryConfiguration();
 
         final Configuration rules = new MemoryConfiguration();
         for (final Map.Entry<String, Object> d : this.defaults.getValues(true).entrySet()) rules.set(d.getKey(), d.getValue());
